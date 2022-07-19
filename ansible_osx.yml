@@ -17,11 +17,7 @@
       community.general.homebrew_tap:
         name: [
           adoptopenjdk/openjdk,
-          fishtown-analytics/dbt,
-          heroku/brew,
-          homebrew/cask-versions,
-          thoughtbot/formulae,
-          weaveworks/tap,
+          homebrew/cask-versions
         ]
 
     - name: Install core packages via brew casks
@@ -32,22 +28,20 @@
         - 1password
         - android-sdk
         - android-studio
-        - datagrip
         - docker
-        - dropbox
         - figma
-        - google-chrome
         - google-cloud-sdk
         - iterm2
-        - kindle
         - ngrok
         - slack
-        - sublime-text
         - telegram
         - visual-studio-code
-        - vlc
         - zoom
         - tuple
+        - rubymine
+        - brave-browser
+        - pritunl
+        - postman
 
     - name: "Install homebrew packages"
       community.general.homebrew:
@@ -91,6 +85,12 @@
           'yarn',
           'zlib',
           'zsh',
+          'autojump',
+          '1password-cli',
+          'tig',
+          'expressvpn',
+          'rover',
+          'circleci'
         ]
         state: present
         update_homebrew: yes
@@ -134,7 +134,7 @@
         owner: "{{ lookup('env', 'USER') }}"
         force: yes
 
-    - name: Create a default VSCode keuybinding configuration
+    - name: Create a default VSCode key binding configuration
       template:
         src: templates/vscode-keybindings.json.j2
         dest: /Users/{{ lookup('env', 'USER') }}/Library/Application Support/Code/User/keybindings.json
@@ -200,8 +200,8 @@
     - name: "Install Default Ruby"
       shell: |
         source /Users/{{ lookup('env', 'USER') }}/.asdf/asdf.sh
-        asdf install ruby 3.0.2
-        asdf global ruby 3.0.2
+        asdf install ruby 3.0.0
+        asdf global ruby 3.0.0
         gem install bundler
         gem install cocoapods
         gem install rubocop
@@ -220,7 +220,6 @@
         asdf install erlang 24.0.2
         asdf global  erlang 24.0.2
 
-
     - name: "Install default elixir"
       shell: |
         source /Users/{{ lookup('env', 'USER') }}/.asdf/asdf.sh
@@ -228,16 +227,46 @@
         asdf global elixir 1.12.3-otp-24
         mix local.hex --force
 
-    - name: Install yarn packages
-      shell: yarn global add {{ item }}
-      with_items:
-        - react-native-cli
-        - create-react-app
-        - apollo
-        - generator-generator
-        - yo
-        
-    - name: re-generate bins now we've installed some yarn packages
-      shell: asdf reshim nodejs
-        
+    - name: "Clone Backend Repos"
+      git:
+        repo: "git@github.com:gaia-venture/{{ item }}.git"
+        dest: "/Users/{{ lookup('env', 'USER') }}/Documents/work/repos/{{ item }}"
+        version: main
+        recursive: no
+      loop:
+        - "marvin"
+        - "mc_tiering"
+        - "book_keeper"
+        - "identity"
+        - "shopkeeper"
+        - "mailman"
+        - "jiva"
+        - "kyc"
+        - "identity_client"
+        - "asli_ri_stub"
+        - "jiva_gateway"
+        - "stencil_gem"
+        - "profile_client"
+        - "API_Automation"
 
+    - name: "Clone Frontend Repos"
+      git:
+        repo: "git@github.com:gaia-venture/{{ item }}.git"
+        dest: "/Users/{{ lookup('env', 'USER') }}/Documents/work/repos/{{ item }}"
+        version: main
+        recursive: no
+      loop:
+        - "micro-collector-app"
+        - "advisor"
+        - "retool"
+        - "retool-js"
+        - "retool-source"
+    
+    - name: "Clone Infra repos"
+      git:
+        repo: "git@github.com:gaia-venture/{{ item }}.git"
+        dest: "/Users/{{ lookup('env', 'USER') }}/Documents/work/repos/{{ item }}"
+        version: main
+        recursive: no
+      loop:
+        - "core-infra"
